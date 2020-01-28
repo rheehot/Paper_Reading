@@ -53,3 +53,15 @@ Convolutional networks are powerful visual models that yield hierarchies of feat
 
 Reference: [Fully Convolutional Networks for Semantic Segmentation - 허다운](https://www.youtube.com/watch?v=_52dopGu3Cw&t=1112s)
 
+---
+
+### A Fully Automated system Using A Convolutional Neural Network to predict Renal Allograft Rejection: extra-validation with Giga-pixel Immunostained slides
+
+**Abstract:**
+
+Pathologic diagnoses mainly depend on visual scoring by pathologists, a process that can be time- consuming, laborious, and susceptible to inter- and/or intra-observer variations. This study proposes
+a novel method to enhance pathologic scoring of renal allograft rejection. A fully automated system using a convolutional neural network (CNN) was developed to identify regions of interest (RoIs) and
+to detect C4d positive and negative peritubular capillaries (PTCs) in giga-pixel immunostained slides. the performance of faster R-CNN was evaluated using optimal parameters of the novel method to enlarge the size of labeled masks. Fifty and forty pixels of the enlarged size images showed the best performance in detecting C4d positive and negative PTCs, respectively. Additionally, the feasibility
+of deep-learning-assisted labeling as independent dataset to enhance detection in this model was evaluated. Based on these two CNN methods, a fully automated system for renal allograft rejection was developed. This system was highly reliable, efficient, and effective, making it applicable to real clinical workflow.
+
+Reference: [A Fully Automated system Using A Convolutional Neural Network to predict Renal Allograft Rejection](https://www.nature.com/articles/s41598-019-41479-5)
