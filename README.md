@@ -77,10 +77,32 @@ Materials and Methods: This retrospective study was approved by the Institutiona
 
 ---
 
-### DeepLab: Semantic Image Segmentation with Deep Convolutional Nets, Atrous Convolution,
-and Fully Connected CRFs
-
+### DeepLab: Semantic Image Segmentation with Deep Convolutional Nets, Atrous Convolution, and Fully Connected CRFs
 **Abstract:**
 
 In this work we address the task of semantic image segmentation with Deep Learning and make three main contributions that are experimentally shown to have substantial practical merit. First, we highlight convolution with upsampled filters, or
 ‘atrous convolution’, as a powerful tool in dense prediction tasks. Atrous convolution allows us to explicitly control the resolution at which feature responses are computed within Deep Convolutional Neural Networks. It also allows us to effectively enlarge the field of view of filters to incorporate larger context without increasing the number of parameters or the amount of computation. Second, we propose atrous spatial pyramid pooling (ASPP) to robustly segment objects at multiple scales. ASPP probes an incoming convolutional feature layer with filters at multiple sampling rates and effective fields-of-views, thus capturing objects as well as image context at multiple scales. Third, we improve the localization of object boundaries by combining methods from DCNNs and probabilistic graphical models. The commonly deployed combination of max-pooling and downsampling in DCNNs achieves invariance but has a toll on localization accuracy. We overcome this by combining the responses at the final DCNN layer with a fully connected Conditional Random Field (CRF), which is shown both qualitatively and quantitatively to improve localization performance. Our proposed “DeepLab” system sets the new state-of-art at the PASCAL VOC-2012 semantic image segmentation task, reaching 79.7% mIOU in the test set, and advances the results on three other datasets: PASCAL-Context, PASCAL-Person-Part, and Cityscapes. All of our code is made publicly available online.
+
+---
+
+### U-Net: Convolutional Networks for Biomedical Image Segmentation 
+
+* contracting path -> expanding path = encoding -> decoding
+* Biomedical image Segmentation에서 쓰이기 위해서 사용
+* 단순한 이미지를 분류하는 문제를 넘어서 이미지의 특정 영역을 label로 표현하는 image Segementation에 목적이 있다.
+* Sliding window를 쓰지않고 patch방식을 채택. 이미지 전체를 격자로 잘라서 한번에 인식
+* 기존은 Context 와 localization의 tradeoff였지만 Patch를 사용하여 해결
+* Patch - 이미지 인식 단위
+  <img width="657" alt="스크린샷 2020-02-04 오후 7 26 23" src="https://user-images.githubusercontent.com/46750574/73739746-2d57a900-478a-11ea-9145-720a3e80d71d.png">
+* 매 contracting 마다 각 max pool 하기 전 레이어의 결과값을 우측의 같은 대응되는 크기의 output 필터에 concat시킴. 왼쪽 이미지가 더 크므로 resize해줌. Mirroring padding을 진행할때 손실되는 path를 살리기 위해서 보상처리 해줌
+* contracting path에서 padding이 없었기 때문에 점점 이미지 외곽 부분이 없어짐
+* 이미지가 단순 작아진게 아니라 외곽 부분이 잘려나감. 그래서 mirroring으로 이미지 복구
+* 내려갈때는 1/2 down sampling , 활성화 함수는 ReLU
+
+<img width="557" alt="스크린샷 2020-02-04 오후 7 26 51" src="https://user-images.githubusercontent.com/46750574/73739753-2df03f80-478a-11ea-9ed5-0f6e7117257a.png">
+
+* w라는 가중치를 정답 픽셀에 대한 cross entropy loss에 추가
+* d1은 가장 가까운 셀, d2는 두번째로 가까운 셀
+* 두 세포사이의 간격이 좁을 수록 weight를 큰 값으로 두 세포 사이가 넓을 수록 weight를 작은 값으로 갖게 된다. 
+* 간격이 넓어질 수록 loss 가 작아진다.
+* 각 cell들이 만나는 경계부분에서의 가중치를 더 높게 주어서 경계부분을 확실하게 구분해 내겠다는 것.
