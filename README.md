@@ -20,7 +20,50 @@ An Incremental Improvement
 
 We present some updates to YOLO! We made a bunch of little design changes to make it better. We also trained this new network that’s pretty swell. It’s a little bigger than last time but more accurate. It’s still fast though, don’t worry. At 320 x 320 YOLOv3 runs in 22 ms at 28.2 mAP, as accurate as SSD but three times faster. When we look at the old .5 IOU mAP detection metric YOLOv3 is quite good. It achieves 57.9 AP50 in 51 ms on a Titan X, com- pared to 57.5 AP50 in 198 ms by RetinaNet, similar perfor- mance but 3.8⇥ faster. As always, all the code is online at https://pjreddie.com/yolo/.
 
+* 1 Stage Detector
+* 단 하나의 네트워크가 한 번에 객체의 위치와 분류가 동시에 이루어진다. 중대한 localization error (작은 BB와 큰 BB를 동일하게 처리하기 때문), 앵커박스의 개념 도입으로부터 사전에 좋은 앵커 박스를 미리 지정해줘야한다. 
+* 바운딩 박스의 형태가 트레이닝 데이터를 통해서만 학습되므로, 새로운 / 독특한 형태의 바운딩 박스인 경우 정확하게 예측하지 못한다. 겹쳐진 사물의 구분은 어렵다.
+* 7x7 그리드로 영상을 나눈뒤, 각 그리드에서 중심을 그리드 안쪽으로 하면서 크기가 일정하지 않은 경계박스를 2개씩 생성.
+* 각 박스는 하나의 box confidence score를 가지고 있다. 
+* 한 그리드 셀이 하나의 클래스만 예측할 수 있다. 작은 객체 여러개가 다닥다닥 붙으면 정확하게 예측할 수 없다. 
+* YOLO는 객체탐지를 회귀 문제로 접근하며 별도의 지역 제안을 위한 구조 없이 한번에 전체 이미지로부터 어떤 객체들이 어디에 위치하고 있는지 예측할 수 있다. 
+* YOLO는 모든 클래스에 대한 모든 바운딩 박스를 동시에 예측한다.
+* NMS - confidence score순으로 예측을 정렬. 예측 중에서 신뢰도가 가장 큰 것 하나만 남기고 나머지는 모두 지운다. 임계값 미만도 무시
+* YOLO-9000 : COCO 데이터셋과 ImageNet 데이터셋을 Joint 하여 기존의 Object Detection을 다루는 모델들 보다 많은 데이터를 활용하겠다!
+* YOLO-v2는 모델의 마지막 부분 Fully Connected Layer를 Convolution Layer로 바꿈
+* YOLOv3 : 기존의 YOLO의 recall 문제를 해결하겠다. recall 이란 기존의 YOLO에서 recall 이란 detection rate와 일치. 사전에 정의된 Anchor Box를 시므도이드 함수를 통하여 BB 를 다시 찾아내고 가장 GT와 가까운 값을 Confidence 를 1로 준다. 
+
+![img](https://blogfiles.pstatic.net/MjAxNzA0MjhfMTgy/MDAxNDkzMzYyNDk1MTE5.sJhub9RA2DgRz3-ziXYL-UfX1VcnPcpdxqzYoWnyTk4g.RtfPbkK1GajeoYLlXBpxotv6KZE_an22ns7C1OHlq00g.PNG.sogangori/last0.PNG?type=w1)
+
+> 그림) 네트워크 예측
+
+왼쪽 빨간점으로 표시한 부분은 7x7 그리드셀중에 하나로 이미지에서 개의 중앙 부분에 해당한다.
+
+그리고 빨간색 박스보다 큰 **노란색 박스**가 바로 빨간색 그리드셀에서 예측한 경계 박스이다.
+
+7x7 은 영상을 7x7 의 격자로 나눈것이다.
+
+30개의 채널은 (경계 박스의 정보 4개 , 경계 박스안에 오브젝트가 있을 확률(confidence)) x 2, 어떤 클래스일 확률 20개 로 구성된다.
+
+경계 박스 정보 x, y : 노란색 경계 박스의 중심이 빨간 격자 셀의 중심에서 어디에 있는가.
+
+경계 박스 정보 w,h : 노란색 경계 박스의 가로 세로 길이가 전체 이미지 크기에 어느 정도 크기를 갖는가
+
+만약 경계박스가 위의 그림처럼 되었다면 x,y는 모두 0.5 정도이고 w,h는 각각  2/7, 4/7 정도가 될 것이다.
+
+노란색 경계 박스는 반드시 그 중심이 빨간 그리드 셀 안에 있어야 하며, 가로와 세로길이는 빨간 그리드 셀보다 작을 수도 있고 그림처럼 클 수도 있다.
+
+또한 정사각형일 필요도 없다.
+
+빨간 그리드 셀 내부 어딘가를 중심으로 하여 근처에 있는 어떤 오브젝트를 둘러싸는 직사각형의 노란색 경계 박스를 그리는 것이 목표이다.
+
+노란색 경계 박스가 바로 ROI , 오브젝트 후보이다.
+
+이것을 2개 만든다.
+
 Reference : [PR-207: YOLOv3: An Incremental Improvement](https://www.youtube.com/watch?v=HMgcvgRrDcA&list=PLqAFpvtCnrySi60YxMXf45YAyY9X24hLO&index=2)
+
+
 
 ---
 
