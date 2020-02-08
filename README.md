@@ -74,6 +74,21 @@ Reference : [PR-207: YOLOv3: An Incremental Improvement](https://www.youtube.com
 We present a conceptually simple, flexible, and general framework for object instance segmentation. Our approach
 efficiently detects objects in an image while simultaneously generating a high-quality segmentation mask for each in- stance. The method, called Mask R-CNN, extends Faster R-CNN by adding a branch for predicting an object mask in* parallel *with the existing branch for bounding box recogni- tion. Mask R-CNN is simple to train and adds only a small overhead to Faster R-CNN, running at 5 fps. Moreover, Mask R-CNN is easy to generalize to other tasks,* e.g*., al- lowing us to estimate human poses in the same framework. We show top results in all three tracks of the COCO suite of challenges, including instance segmentation, bounding-box object detection, and person keypoint detection. Without tricks, Mask R-CNN outperforms all existing, single-model entries on every task, including the COCO 2016 challenge winners. We hope our simple and effective approach will serve as a solid baseline and help ease future research in instance-level recognition. Code will be made available.
 
+* Faster R-CNN 에서 출발하여 Instance Segmentaion을 적용하고자 하는 모델
+* Instance Segmentaion = Object detection과 semantic segmentation을 동시에 해야 함.
+* Faster R-CNN에서 detect한 각각의 box에 mask를 씌워주는 모델
+* Fully Convolutional Networks 사용, Faster R-CNN + FCN = Mask R-CNN, 
+* 기존의 Faster R-CNN을 Object detection 역할을 하도록 하고 각각의 RoI (Region of Interest)에 mask segmentation을 해주는 작은 FCN (Fully Convolutional Network)를 추가
+* RoI Pooling, RoIAlign 둘다 서로 다른 크기의 region을 동일한 크기로 맞추기 위해 사용. feature map을 crop하고 고정된 크기로 보간해 resize한다
+* RoI Pooling 과정에서 RoI가 소수점 좌표를 갖고 있을 경우, 각 좌표를 반올림한 다음에 Pooling, input Image의 원본 위치 정보가 왜곡되기 때문에 Classification task에서는 문제가 발생하지 않지만 pixel단위로 detection하는 segmentaion에서는 문제가 발생.
+* RoIAlign 쌍방향 보간을 사용
+* mask prediction , class prediction을 decouple함. mask는 어떤 class인지 몰라도 된다(binary mask)
+* Loss function 은 분류, 박스 회귀, 바이너리 마스킹이 병행으로 처리된다.
+
+<img width="839" alt="스크린샷 2020-02-04 오후 6 11 05" src="https://user-images.githubusercontent.com/46750574/73739743-2d57a900-478a-11ea-94ba-162199909aed.png">
+
+
+
 Reference : [PR-057: Mask R-CNN](https://www.youtube.com/watch?v=RtSZALC9DlU&t=881s)
 
 ---
