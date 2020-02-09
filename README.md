@@ -99,6 +99,34 @@ Reference : [PR-057: Mask R-CNN](https://www.youtube.com/watch?v=RtSZALC9DlU&t=8
 
 We propose CornerNet, a new approach to object detection where we detect an object bounding box as a pair of keypoints, the top-left corner and the bottom-right corner, using a single convolution neural network. By detecting objects as paired keypoints, we eliminate the need for designing a set of anchor boxes commonly used in prior single-stage detectors. In addi- tion to our novel formulation, we introduce corner pool- ing, a new type of pooling layer that helps the network better localize corners. Experiments show that Corner- Net achieves a 42.2% AP on MS COCO, outperforming all existing one-stage detectors.
 
+* 기존의 Anchor Box의 문제점 
+  * 사전에 만들어놔야 한다. training time, inference time
+  * positive, negative box들의 imbalance을 초래, high Recall
+* bounding box를 왼쪽 위, 오른쪽 아래의 한 쌍의 keyPoint로 감지하는 object detection에 대한 새로운 접근방법을 제안
+* 이 keyPoint로 detection하기 때문에 앵커 박스를 만들 필요가 없다.
+* Single convolution network를 사용해서 모서리에 대한 heatmap, 한 쌍의 모서리를 그룹화 해줄 임베딩을 예측한다
+* conv Network가 Corner localize하는데 도움이 되는 corner pooling이 존재
+* Corner pooling
+
+<img width="810" alt="스크린샷 2020-02-04 오후 7 18 29" src="https://user-images.githubusercontent.com/46750574/73739721-1fa22380-478a-11ea-94b4-62293b7d2d79.png">
+
+<img width="541" alt="스크린샷 2020-02-04 오후 7 11 59" src="https://user-images.githubusercontent.com/46750574/73739752-2df03f80-478a-11ea-9691-2f541b8d3192.png">
+
+* 두 개의 예측 모듈(top-left, bottom-right)이 있다. 
+* 각 모듈에는 위에 3가지를 예측하기 전에 feature를 pooling하는 corner pooling이 있다. 
+* 그리고 object를 detection 하기 위해서 여러가지 scale를 사용하지는 않는다. backbone의 출력에만 두 모듈을 적용한다.
+
+<img width="289" alt="스크린샷 2020-02-04 오후 7 12 11" src="https://user-images.githubusercontent.com/46750574/73739704-1749e880-478a-11ea-9d62-350517196d6f.png">
+
+* 각각의 corner에 대해서 embedding vector를 예측해서 top-left와 bottom-right가 동일한 bounding box에 속하는 경우 embedding vector 사이의 거리가 작아야한다. 
+* 그리고 corner사이의 거리를 기준으로 그룹화를 할 수 있다. embedding의 실제값은 중요하지 않고 embedding 사이의 거리만 중요하다. 1차원 embedding을 사용한다.
+* pull loss : Network를 훈련해 corner를 그룹화
+* push loss : Network를 훈련해 corner를 분리
+* ekek : etk,ebketk,ebk의 평균
+* ∆ : 1
+
+
+
 Reference : [PR-146: CornerNet](https://www.youtube.com/watch?v=6OYmOtivQY8&t=1433s)
 
 ---
