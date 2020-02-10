@@ -137,6 +137,25 @@ Reference : [PR-146: CornerNet](https://www.youtube.com/watch?v=6OYmOtivQY8&t=14
 
 Convolutional networks are powerful visual models that yield hierarchies of features. We show that convolu- tional networks by themselves, trained end-to-end, pixels- to-pixels, exceed the state-of-the-art in semantic segmen- tation. Our key insight is to build “fully convolutional” networks that take input of arbitrary size and produce correspondingly-sized output with efficient inference and learning. We define and detail the space of fully convolu- tional networks, explain their application to spatially dense prediction tasks, and draw connections to prior models. We adapt contemporary classification networks (AlexNet [22], the VGG net [34], and GoogLeNet [35]) into fully convolu- tional networks and transfer their learned representations by fine-tuning [5] to the segmentation task. We then define a skip architecture that combines semantic information from a deep, coarse layer with appearance information from a shallow, fine layer to produce accurate and detailed seg- mentations. Our fully convolutional network achieves state- of-the-art segmentation of PASCAL VOC (20% relative im- provement to 62.2% mean IU on 2012), NYUDv2, and SIFT Flow, while inference takes less than one fifth of a second for a typical image.
 
+* Fully convolutional network를 사용하여 입력 이미지에 대한 크기 제한이 발생하지 않는다
+* 논문에서는 classification쪽으로 좋은 성능을 발휘한 네트워크들을 사용함. e.g VGGNet GoogLeNet..
+* 기존과 달리 convolution layer만 사용됨 FC layer 대신 1x1 Convolution layer 사용
+* 기존 Fully Connected Layer는 flatten하기 때문에 위치 정보가 소실됨.
+* 대신 skip architecture 구조를 사용! FCN을 거치고 나온 feature는 coarse 한 위치정보만을 가지고있다.
+
+<img width="636" alt="스크린샷 2020-02-04 오후 6 23 29" src="https://user-images.githubusercontent.com/46750574/73739751-2df03f80-478a-11ea-8877-f1621f3c24d8.png">
+
+* FCN의 Architecture 단계는 3단계로 나뉜다.
+  * Feature를 추출하는 Convolution 단계
+  * 뽑아낸 feature에 대해 pixelwise prediction 단계
+  * classification을 한뒤 각 원래의 크기로 만들기 위한 Upsampling 단계
+  * 이러한 단계를 거친 후 각 pixel에 class따라 색칠을 한뒤 Segmentation 결과를 보여준다. 
+
+* 1 x 1 Convolution (Convolutionalization)을 하면서 reshape이 되므로 Upsampling 과정이 필요하다. 여기서 Skip Layer를 사용해 다시 업샘플링 과정과 위치정보들을 가져온다.
+* DownSampling 과정에선 semantic한 contextful한 정보들을 추출
+
+<img width="659" alt="스크린샷 2020-02-04 오후 6 31 56" src="https://user-images.githubusercontent.com/46750574/73739720-1fa22380-478a-11ea-809c-ac947c362a2a.png">
+
 Reference: [Fully Convolutional Networks for Semantic Segmentation - 허다운](https://www.youtube.com/watch?v=_52dopGu3Cw&t=1112s)
 
 ---
