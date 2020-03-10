@@ -188,6 +188,31 @@ Materials and Methods: This retrospective study was approved by the Institutiona
 In this work we address the task of semantic image segmentation with Deep Learning and make three main contributions that are experimentally shown to have substantial practical merit. First, we highlight convolution with upsampled filters, or
 ‘atrous convolution’, as a powerful tool in dense prediction tasks. Atrous convolution allows us to explicitly control the resolution at which feature responses are computed within Deep Convolutional Neural Networks. It also allows us to effectively enlarge the field of view of filters to incorporate larger context without increasing the number of parameters or the amount of computation. Second, we propose atrous spatial pyramid pooling (ASPP) to robustly segment objects at multiple scales. ASPP probes an incoming convolutional feature layer with filters at multiple sampling rates and effective fields-of-views, thus capturing objects as well as image context at multiple scales. Third, we improve the localization of object boundaries by combining methods from DCNNs and probabilistic graphical models. The commonly deployed combination of max-pooling and downsampling in DCNNs achieves invariance but has a toll on localization accuracy. We overcome this by combining the responses at the final DCNN layer with a fully connected Conditional Random Field (CRF), which is shown both qualitatively and quantitatively to improve localization performance. Our proposed “DeepLab” system sets the new state-of-art at the PASCAL VOC-2012 semantic image segmentation task, reaching 79.7% mIOU in the test set, and advances the results on three other datasets: PASCAL-Context, PASCAL-Person-Part, and Cityscapes. All of our code is made publicly available online.
 
+* field of view (한 픽셀이 볼 수 있는 영역)
+* 여태 내가 봤었던 segmentaion 논문중에선 제일 좋은듯 2016년에 나옴
+* Classification이나 detection은 기본적으로 대상의 존재 여부에 집중하기에 object-centric하며, 강력한 성능을 발휘하기 위해선 여러 단계의 conv+pooling(classification은 global한 정보만 필요하기 때문)을 거쳐 말 그대로 영상 속에 존재하며 변화에 영향을 받지 않는(robust하게 영향을 덜 받는) 강인한 feature만을 끄집어내야 함
+  - 따라서 details보다는 global 한 것에 집중을해야 함
+* 반면 semantic segmentation은 픽셀 단위의 조밀한 예측이 필요한데, classification 망을 기반으로 segmantation망을 구성하게 되면 계속 feature map의 크기가 줄어들기에 detail한 정보를 얻는데 어려움이 있음
+* 그래서 FCN 개발자는 skip layer를 사용하여 1/8, 1/16, 1/32 결과를 결합(concat)하여 detail이 줄어드는 문제를 보강하였으며, DeepLab과 앞서 본 dilated convolution 팀(Fisher Yu)은 망의 뒷 단에 있는 2개의 pooling layer를 없애고 dilated conv(atrous conv)를 사용하여 receptive field를 확장시키는 효과를 얻었으며, 1/8 크기까지만 feature map을 줄이도록 하여 detail한 정보들을 보존함
+* 하지만 1/8까지만 사용하더라도 다음과 같은 문제가 발생
+  - Receptive field가 충분히 크지 않아 다양한 scale에 대응이 어렵다
+  - 1/8크기의 정보를 bilinear interpolation을 통해 원 영상 크기로 키우면 1/32 크기를 확장한것보다는 details가 살아있지만 여전히 정교함이 떨어진다. 보간의 한계
+* Atrous Conv는 보다 넓은 scale을 보기위해 중간에 hole(0)을 채워넣고 conv을 수행하는 것을 의미
+* kernel 크기는 기존의 Conv와 동일하기 때문에 연산량은 동일하지만 receptive field의 크기가 커지는 효과가 있다.
+* DCNN에서 max-pooling을 2개 제거함으로 detail을 살림. 이 자리에 atrous conv를 사용해 더 넓은 receptive field를 보게함
+* 그 이후로 쌍방향 보간으로 원 영상 크기를 복원함. 근데 보간만으로는 정확한 객체의 픽셀 단위까지 위치를 정교히 segmentation하는게 불가능하므로 CRF를 이용하여 후처리를 수행하도록 함
+* 전체적인 구조 = DCNN + CRF이다
+* multi-scale에 더 강인하도록 fc6 Layer에서의 Atrous conv를 위한 rate를 6,12,18,24로 적용하고 그 결과를 concat 시킴
+* CRF는 픽셀의 위치, RGB값으로는 비슷하나 Label이 다르면 패널티를 주어 개선시킨다.
+* Short-range CRF는 local connection만을 사용하기 때문에 detail한 정보를 얻을 수 없다.
+* fully connected CRF를 사용하게 되면 detail한 정보를 얻을 수 있다.
+* 근데 fully connected CRF로 전 영역을 다보기엔 연산량이 너무 많아서 mean field approximation을 사용. 
+* mean field approximation - 수많은 변수들로 이루어진 복잡한 관계를 갖는 상황에서 특정 변수와 다른 변수들의 관계의 평균을 취하면, 평균으로부터 변화를 해석하는데 용이.
+
+<img width="619" alt="스크린샷 2020-02-04 오후 6 52 40" src="https://user-images.githubusercontent.com/46750574/73739722-203aba00-478a-11ea-9a5c-a38ba4059374.png">
+
+<img width="572" alt="스크린샷 2020-02-04 오후 7 03 08" src="https://user-images.githubusercontent.com/46750574/73739745-2d57a900-478a-11ea-9f37-3b447e30d703.png">
+
 ---
 
 ### U-Net: Convolutional Networks for Biomedical Image Segmentation 
