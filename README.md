@@ -171,6 +171,19 @@ of deep-learning-assisted labeling as independent dataset to enhance detection i
 
 Reference: [A Fully Automated system Using A Convolutional Neural Network to predict Renal Allograft Rejection](https://www.nature.com/articles/s41598-019-41479-5)
 
+* 병리 조직 슬라이드를 판독해 신장이식 수술 후 항체매개면역거부반응 여부를 진단해내는 인공지능을 개발해 적용한 결과, 병리과 전문의가 직접 판독한 결과 대비 90%의 정확도를 보였다.
+* 판독 시간도 평균적으로 약 13분에 불과해 인공지능으로 신장 조직을 분석한 후 병리과 전문의가 추가적으로 판독하면 혹시 모를 진단 오류 발생 가능성과 진단에 걸리는 시간이 크게 줄어들 것으로 기대된다.
+* 수술 후 항체매개면역거부반응이 의심되면 환자의 신장 조직을 채취한 후 특정 면역염색 기법을 적용해 **세뇨관 주위 모세혈관(peritubular capillary)의 개수**를 세야 한다. 염색된 모세혈관이 일정 기준보다 많으면 신장이식 거부반응이 실제로 있을 가능성이 매우 높다고 진단한다.
+* 지금까지는 병리과 전문의가 직접 현미경으로 수백 배 확대해 육안으로 분석하고 있다. 하지만 모세혈관이 매우 많다보니 일일이 다 보는 것 자체가 시간이 매우 오래 걸릴 뿐만 아니라 일부분만 보더라도 눈에 피로가 쌓여 정확도가 떨어질 수밖에 없는 한계가 있었다.
+* 연구팀은 먼저 2009년부터 2016년까지 서울아산병원에서 신장이식 수술을 받은 환자들의 신장 병리 조직 슬라이드 200개를 면역염색한 후 인공지능에 학습시켰다.
+* 인공지능에는 인간의 신경망을 본 뜬 합성곱 신경망(CNN) 기술이 적용됐으며 연구팀은 추가적으로 180개의 신장 병리 조직 슬라이드를 이용해 인공지능 기술의 유효성을 검증했다.
+* 그 결과 신장 병리 조직 슬라이드에서 세뇨관 주위 모세혈관이 있어 꼭 분석해야 하는 영역들을 인공지능 기술이 약 12분 만에 평균 147개씩 찾아냈다.
+* 또한 검출된 영역 중에서 병리과 전문의가 판독한 정답 대비 무려 90%의 정확도로 세뇨관 주위 모세혈관을 약 1분 만에 찾아내 총 13분 정도 만에 신장이식 거부반응 여부를 판독해냈다. 
+* Feasible RoI검출을 사람이 했었는데 CNN이 feasible , non-feasible을 검출한다.
+* 뒤에서는 후보 Feasible RoI들을 추출하고 그중에서 후보 PTC를 검출했다.
+
+
+
 ---
 
 ### CT Image Conversion among Different Reconstruction Kernels without a Sinogram by Using a Convolutional Neural Network
