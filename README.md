@@ -249,3 +249,14 @@ In this work we address the task of semantic image segmentation with Deep Learni
 * 두 세포사이의 간격이 좁을 수록 weight를 큰 값으로 두 세포 사이가 넓을 수록 weight를 작은 값으로 갖게 된다. 
 * 간격이 넓어질 수록 loss 가 작아진다.
 * 각 cell들이 만나는 경계부분에서의 가중치를 더 높게 주어서 경계부분을 확실하게 구분해 내겠다는 것.
+
+![u-net_fig_2](https://modulabs-biomedical.github.io/assets/images/posts/2018-04-02-U_Net/u-net_fig_2.png)
+
+> Overlap-tile 전략은, U-Net에서 다루는 전자 현미경 데이터의 특성상 이미지 사이즈의 크기가 상당히 크기 때문에 Patch 단위로 잘라서 Input 으로 넣고 있다.
+>
+> 이때 `Fig.2`에서 보는 것과 같이 Border 부분에 정보가 없는 빈 부분을 0으로 채우거나, 주변의 값들로 채우거나 이런 방법이 아닌 Mirroring 방법으로 pixel의 값을 채워주는 방법.
+>
+> 노랑색 영역이 실제 세그멘테이션 될 영역이고, 파랑색 부분이 Patch.
+>
+> 그림을 확대해서 자세히 보시면, 거울처럼 반사되어 border부분이 채워진 것을 확인 할 수 있다.
+
