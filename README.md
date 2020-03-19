@@ -260,3 +260,38 @@ In this work we address the task of semantic image segmentation with Deep Learni
 >
 > 그림을 확대해서 자세히 보시면, 거울처럼 반사되어 border부분이 채워진 것을 확인 할 수 있다.
 
+---
+
+### Diagnostic Assessment of Deep Learning Algorithms for Detection of Lymph Node Metastases in Women With Breast Cancer
+
+SLN 이란? sentinel axillary lymph nodes 로써 유방암 진단의 중요한 부분이다. SLN 진단은 매우 지치고 시간이 많이 소비됨. 따라서 이 연구에서는 딥러닝을 활용하여 SLN슬라이드 안에서의 전이 감지를 조사하고 실제 병리학자의 진단과 비교한다. Dataset 은 카멜라니안 16 사용 11명의 병리학자가 참여하여 비교해줌.
+
+트레이닝은 270 테스트는 129 . 두 테스크로 나뉘는데 하나는 wsi이미지로 개별 전이식별과 모든 wsi이미지에서 SLN 전체 슬라이드 영상에서 개별적인 전이 확인과 모든 wsi영상에서의 SLN의 전이를 포함하거나 포함하지 않은것으로 정의함.
+
+테스크 1 은 FROC로 평가를 받고 , 테스크 2 는 49개의 SLN포함된 WSI와 80개의 포함안된 이미지ㅇ를 구별하도록 평가받음 평가는 ROC로 함. 또한 알고리즘은 시간에 제약을 두는 병리학자와 안두는 병리학자와 똑같이 구분하여 평가받음. 시간 제약은 2시간으로 129개의 wsi를 평가받음 .
+
+신뢰도는 5단계(확실히 정상, 아마도 정상, 모호, 아마도 종양, 확실히 종양)로 나타냈다.
+
+level confidence 
+
+* definitely normal
+* probably normal
+* equivocal
+* probably tumor
+* definitely tumor
+
+테스크 1,2 의 알고리즘에서 가장 우수한 성적을 보인 팀은 하버드 mit 팀인데 이 팀은 테스크 1은 FROC 0.807이었다. 테스크 2에서는 AUC 0.994로 제일 높았다. 1등팀은 구글넷을 사용했다. WTC 병리학자의 AUC는 0.810이었다. 그리고 상위 20위까지의 테스크 분류 방식이 다 딥러닝이었는데도 불구하고 성능의 차이가 난것은 보조 전략때문이었는데 standardization technique 과 같은 기술을 사용하였다. 
+
+task 1 Identification
+
+task 2 Classification
+
+한계
+
+* 정상과 종양 조직의 배경사이에 구분하기위한 훈련이 필요된다
+* SLN에서의 다른 병리 감지는 제외됨
+* 알고리즘의 런타임은 기록되지 않음
+* 임상실험시 병리학자가 접하는 사례와 직접적으로 비교가 되지 않는다.
+* 병리학자의 슬라이드에는 유방암 전이의 존재, 부재를 결정할수있는 환자마다 한 개의 염색 슬라이드만 주어짐. 
+* 현실 의료에서는 다중레벨의 섹션으로부터 평가함
+
