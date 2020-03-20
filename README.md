@@ -295,3 +295,59 @@ task 2 Classification
 * 병리학자의 슬라이드에는 유방암 전이의 존재, 부재를 결정할수있는 환자마다 한 개의 염색 슬라이드만 주어짐. 
 * 현실 의료에서는 다중레벨의 섹션으로부터 평가함
 
+---
+
+## Detecting Cancer Metastases on Gigapixel Pathology Images
+
+크게 slide-level Classification 과 tumor-level classification으로 나뉨.
+
+* 유방암 환자에 대한 치료의 결정은 유방으로부터 다른 조직으로 전이가 되었는지의 여부에 달려있다. 병리학자들은 시간과 노력을 쏟았지만 여전히 오진과 강도높은 노동이 필요
+* CNN 과 Camelyon16 에서의 sota의 결과를 가져와 97% AUC와 2개의 잘못 라벨링된 데이터를 발견, FN도 줄임
+* 림프절에서 유방암 전이 발견을 돕는 프레임워크 (CNN)
+* Inception 구조로 stride 128로 바꿧는데 슬라이드마다 8 FP로 절반이나 줄임
+* 우리는 이익이 없는 여러 접근법을 발견함
+  * 다중 스케일 접근
+  * 이미지넷 이미지의 pretraining
+  * color normalization
+    * 디지털 영상에 대한 영상처리 과정의 정확성을 높이기 위해 원하지 않는 뒤틀림을 줄이고 일부 특징을 향상시키기 위한 처리를 의미한다[12]. 조직병리 영상의 경우, 염색과정과 스캐닝 조건에 따른 편차를 줄이기 위해 ‘색상 정규화(color normalization)’ 작업이 필수적이다(그림1). 또한 면역형광염색의 경우 조직의 자가형광을 보상하기 위한 작업도 전처리 과정으로 분류할 수 있다[13].
+    * 필자는 성과를 향상시키기 위한 정규화를 발견하지 못했다.
+* Inception v3을 사용, input size = 299 x 299. 각 인풋의 패치에서 128 x 128 중심 영역의 라벨을 예측. 그 중에서 하나라도 종양이 존재한다면 종양이라고 라벨링 함
+* param수를 줄여가며 영향 실험을 해봄. 또한 multi scale 은 별로 효과가 없었기 때문에 2개의 크기로만 사용
+
+Sampling - tumor 와 normal 의 비율이 imbalance 하기 때문에 careful하게 샘플링함
+
+* normal, tumor 를 같은 확률로 뽑음
+* label의 patch를 가지고있는 slide를 random하게 뽑음
+* 그 patch들을 가지고 sampling
+
+Data Augmentations
+
+- 4 multiples of 90˚ rotations + left-right flip (8 orientations)
+- perturb color : (maximum delta)
+  - brightness 64/255,
+  - saturation 0.25,
+  - hue 0.04
+  - contrast 0.75
+- Jitter : up to 8 pixels.
+- pixel values clipped [0,1], and scaled [-1,1]
+
+Implementations Details
+
+- batch size = 32
+- RMSProp , momentum 0.9, decay 0.9, $\epsilon$ = 1.0
+- initial lr = 0.05, 0.5 decay every 2 M ex.
+- for refining a model pretrained on ImageNet, initial lr = 0.002
+
+( FROC Metric check)
+
+FROC computation 을 위해 카멜레온 승자들은 비트마스크를 생성하여 히트맵에 임계값을 적용, 비트맵의 각 연결요소들을 단일 예측을 report함.
+
+이와는 반대로, 필자는 비최대억제를 사용하여 t를 넘는 히트맵안에 있는 값이 없을때 까지 두 단계를 반복함. 
+
+이전 연구들
+
+이전 연구들은 pre-training 된 다른 도메인에서의 성능을 보인 모델들을 사용했다. 하지만 필자는 pre-training이 convergence speed 에서 improve 할 순 있으나, FROC을 개선하진 못함. 병리학 이미지와 ImageNet에서의 image들은 큰 도메인의 차이가 있기 때문이라고 추측. 게다가 병리학의 데이터(필자의 데이터는 10^7 patches) 처럼 엄청 큰 데이터와 데이터 증식 덕분에 pre-training이 필요가 없다.
+
+다음으로는 작은 모델이 더 큰 성능을 발휘했다.
+
+다음은 multi-scale approach인데 40X with an additional input heatmaps가 더 좋은 성능을 발휘하지 않는다는 것을 발견. 이 조합들은 smoother heatmaps 을 만드는데 CNN의 이동 불변성과 인접한 매치들의 overlap 때문이다. 그래서 이러한 개선이 종양에 둘러쌓인 작은 비 종양 지역들을 드러낸다. 
