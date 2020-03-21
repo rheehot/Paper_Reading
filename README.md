@@ -272,7 +272,7 @@ SLN 이란? sentinel axillary lymph nodes 로써 유방암 진단의 중요한 �
 
 신뢰도는 5단계(확실히 정상, 아마도 정상, 모호, 아마도 종양, 확실히 종양)로 나타냈다.
 
-level confidence 
+#### level confidence 
 
 * definitely normal
 * probably normal
@@ -282,11 +282,11 @@ level confidence
 
 테스크 1,2 의 알고리즘에서 가장 우수한 성적을 보인 팀은 하버드 mit 팀인데 이 팀은 테스크 1은 FROC 0.807이었다. 테스크 2에서는 AUC 0.994로 제일 높았다. 1등팀은 구글넷을 사용했다. WTC 병리학자의 AUC는 0.810이었다. 그리고 상위 20위까지의 테스크 분류 방식이 다 딥러닝이었는데도 불구하고 성능의 차이가 난것은 보조 전략때문이었는데 standardization technique 과 같은 기술을 사용하였다. 
 
-task 1 Identification
+#### task 1 Identification
 
-task 2 Classification
+#### task 2 Classification
 
-한계
+#### Limitation
 
 * 정상과 종양 조직의 배경사이에 구분하기위한 훈련이 필요된다
 * SLN에서의 다른 병리 감지는 제외됨
@@ -299,7 +299,7 @@ task 2 Classification
 
 ## Detecting Cancer Metastases on Gigapixel Pathology Images
 
-크게 slide-level Classification 과 tumor-level classification으로 나뉨.
+#### 크게 slide-level Classification 과 tumor-level classification으로 나뉨.
 
 * 유방암 환자에 대한 치료의 결정은 유방으로부터 다른 조직으로 전이가 되었는지의 여부에 달려있다. 병리학자들은 시간과 노력을 쏟았지만 여전히 오진과 강도높은 노동이 필요
 * CNN 과 Camelyon16 에서의 sota의 결과를 가져와 97% AUC와 2개의 잘못 라벨링된 데이터를 발견, FN도 줄임
@@ -320,7 +320,7 @@ Sampling - tumor 와 normal 의 비율이 imbalance 하기 때문에 careful하�
 * label의 patch를 가지고있는 slide를 random하게 뽑음
 * 그 patch들을 가지고 sampling
 
-Data Augmentations
+#### Data Augmentations
 
 - 4 multiples of 90˚ rotations + left-right flip (8 orientations)
 - perturb color : (maximum delta)
@@ -331,20 +331,16 @@ Data Augmentations
 - Jitter : up to 8 pixels.
 - pixel values clipped [0,1], and scaled [-1,1]
 
-Implementations Details
+#### Implementations Details
 
 - batch size = 32
 - RMSProp , momentum 0.9, decay 0.9, $\epsilon$ = 1.0
 - initial lr = 0.05, 0.5 decay every 2 M ex.
 - for refining a model pretrained on ImageNet, initial lr = 0.002
 
-( FROC Metric check)
-
 FROC computation 을 위해 카멜레온 승자들은 비트마스크를 생성하여 히트맵에 임계값을 적용, 비트맵의 각 연결요소들을 단일 예측을 report함.
 
 이와는 반대로, 필자는 비최대억제를 사용하여 t를 넘는 히트맵안에 있는 값이 없을때 까지 두 단계를 반복함. 
-
-이전 연구들
 
 이전 연구들은 pre-training 된 다른 도메인에서의 성능을 보인 모델들을 사용했다. 하지만 필자는 pre-training이 convergence speed 에서 improve 할 순 있으나, FROC을 개선하진 못함. 병리학 이미지와 ImageNet에서의 image들은 큰 도메인의 차이가 있기 때문이라고 추측. 게다가 병리학의 데이터(필자의 데이터는 10^7 patches) 처럼 엄청 큰 데이터와 데이터 증식 덕분에 pre-training이 필요가 없다.
 
