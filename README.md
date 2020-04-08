@@ -297,9 +297,9 @@ SLN 이란? sentinel axillary lymph nodes 로써 유방암 진단의 중요한 �
 
 ---
 
-## Detecting Cancer Metastases on Gigapixel Pathology Images
+### Detecting Cancer Metastases on Gigapixel Pathology Images
 
-#### 크게 slide-level Classification 과 tumor-level classification으로 나뉨.
+크게 slide-level Classification 과 tumor-level classification으로 나뉨.
 
 * 유방암 환자에 대한 치료의 결정은 유방으로부터 다른 조직으로 전이가 되었는지의 여부에 달려있다. 병리학자들은 시간과 노력을 쏟았지만 여전히 오진과 강도높은 노동이 필요
 * CNN 과 Camelyon16 에서의 sota의 결과를 가져와 97% AUC와 2개의 잘못 라벨링된 데이터를 발견, FN도 줄임
@@ -347,3 +347,81 @@ FROC computation 을 위해 카멜레온 승자들은 비트마스크를 생성�
 다음으로는 작은 모델이 더 큰 성능을 발휘했다.
 
 다음은 multi-scale approach인데 40X with an additional input heatmaps가 더 좋은 성능을 발휘하지 않는다는 것을 발견. 이 조합들은 smoother heatmaps 을 만드는데 CNN의 이동 불변성과 인접한 매치들의 overlap 때문이다. 그래서 이러한 개선이 종양에 둘러쌓인 작은 비 종양 지역들을 드러낸다. 
+
+---
+
+### A Generalized Deep Learning Framework for Whole-Slide Image Segmentation and Analysis
+
+**초록** : 우리의 프레임워크로 generalizability 를 보여주겠다. 
+
+CAMELYON , DigestPath, PAIP 데이터들을 활용하여 훈련을 함.
+
+우리의 세그맨테이션 파이프라인은 DenseNet, InceptionResnet-V2, DeeplabV3+ 를 사용했다.
+
+특히 PAIP데이터로는 test시 viable tumor segmentation 과정에서 jaccard index 0.75를 얻었고, viable tumor burden 점수 0.633을 얻었다.
+
+---
+
+자동 조직병리학은 다음과 같은 어려움을 겪었다.
+
+1. 불충분한 트레이닝 샘플들 : medical images is expensive and less frequent.
+   * imbalance를 초래.
+2. 너무 큰 차원의 WSI : very high resolution
+3. 연구실마다의 stain variability : Lab by Lab 환경
+4. 임상적으로 관련된 특징과 정보의 추출 : 딥러닝에서 가치있는 정보를 뽑아내는게 어렵다
+
+암의 정도를 분류하는 방법 : TNM
+
+T-stage : 종양의 크기, N-stage : 암이 지역 림프절로 확산, M-stage: 종양이 신체의 다른 부분으로 전이되는 것
+
+임상학적으로 전이는 3가지의 카테고리로 나눈다. 
+
+isolated tumor cells(ITC), micro-metastases , macro-metastases.
+
+---
+
+### pN-Stage Slide Labels : Pathologic lymph node classification
+
+**pN0** No micro-metastases or macro-metastases or ITCs found.
+**pN0(i+)** Only ITCs found.
+**pN1mi** Micro-metastases found, but no macro-metastases found.
+**pN1** Metastases found in 1-3 lymph nodes, of which at least one is a macro-metastasis.
+**pN2** Metastases found in 4-9 lymph nodes, of which at least one is a macro-metastasis.
+
+---
+
+본 연구에서는 앞에서 언급한 몇 가지 문제를 해결하는 데 도움이 된 몇 가지 핵심 기여를 제안한다.
+
+1. 매우 큰 WSI : patch-based approach
+2. Insufficient data : overlapping and oversampling strategy and multiple data augmentations.
+3. Inference Pipeline : overlapping strategy
+4. pN Staging : over sampling and under-sampling
+5. Whole tumor segmentation : 경험적인 non-deep learning
+6. Uncertainty Estimation : patch-based uncertainty estimation , data specific and model specific uncertainty
+7. Transfer Learning : using CAMELYON dataset 
+8. Generalizabilty 
+9. open-source packaging
+
+---
+
+Entire framework pipeline
+
+Liver , Breast , Colon Tissue dataset. -> Ensemble FCN based 구조들로 -> uncetainty Mask , Segmentation Mask를 만듬 -> Hand Crafted Features -> tumor burden estimation, pN staging , Metastases Classification
+
+---
+
+데이터 전처리
+
+tissue mask generation 
+
+오슈 적응 임계값을 사용하여 low resolution. RGB 2 HSV. thresholding 은 saturation에서.
+
+patch 좌표 추출
+
+low resolution WSI's tissue mask로 중앙을 뽑은 후, level-0 WSI 에 맞는 좌표들로 rescale. 영역 내에있는 랜덤한 샘플 좌표들을 종양이 있는 없는 지역에서 뽑아냄. 
+
+Data augmentation - flipping left , right 90-degree rotations, Gaussian Blurring.
+
+Color augmentation - random changes to brightness , contrast, hue and saturation
+
+Diversity of patches extracted from the WSI during train cycle
